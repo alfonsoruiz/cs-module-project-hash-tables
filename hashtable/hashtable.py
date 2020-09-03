@@ -2,6 +2,7 @@ class HashTableEntry:
     """
     Linked List hash table key/value pair
     """
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -21,8 +22,14 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
+        # Hash table length can not be smaller than specified values
+        if capacity < MIN_CAPACITY:
+            self.capacity = MIN_CAPACITY
+        else:
+            self.capacity = capacity
 
+        # Create hash table with specified capacity
+        self.hash_table = [None] * capacity
 
     def get_num_slots(self):
         """
@@ -34,8 +41,8 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
 
+        # Your code here
 
     def get_load_factor(self):
         """
@@ -44,7 +51,6 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
 
     def fnv1(self, key):
         """
@@ -55,22 +61,25 @@ class HashTable:
 
         # Your code here
 
-
     def djb2(self, key):
         """
         DJB2 hash, 32-bit
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
+        hash = 5381
 
+        for char in key:
+            hash = ((hash << 5) + hash) + ord(char)
+
+        return hash
 
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
+        # return self.fnv1(key) % self.capacity
         return self.djb2(key) % self.capacity
 
     def put(self, key, value):
@@ -81,8 +90,12 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        # Hash key
+        hashed_key = self.djb2(key)
+        # Mod hash to get index
+        index = self.hash_index(hashed_key)
+        # Insert value at specified index in hash table
+        self.hash_table[index] = value
 
     def delete(self, key):
         """
@@ -92,8 +105,17 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        # Hash key
+        hashed_key = self.djb2(key)
+        # Mod hash to get index
+        index = self.hash_index(hashed_key)
+        # Delete value from
+        deleted_value = self.hash_table.pop(index)
 
+        if deleted_value:
+            return None
+        else:
+            print('Warning key not found in hash table')
 
     def get(self, key):
         """
@@ -103,8 +125,12 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        # Hash Key
+        hashed_key = self.djb2(key)
+        # Mod hash to get index
+        index = self.hash_index(hashed_key)
+        # Return value at specified index from hash table
+        return self.hash_table[index]
 
     def resize(self, new_capacity):
         """
@@ -114,7 +140,6 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
 
 
 if __name__ == "__main__":
