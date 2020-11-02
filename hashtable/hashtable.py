@@ -9,6 +9,60 @@ class HashTableEntry:
         self.next = None
 
 
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    # Return node with specified value
+    # Runtime: O(n) n = length of linked list
+    def find(self, key):
+        current_node = self.head
+
+        while current_node != None:
+            if current_node.key == key:
+                return current_node
+            current_node = current_node.next
+
+        return None
+
+    # Delete node w/ specified value and return value
+    # Runtime: O(n) n = length of linked list
+    def delete(self, key):
+        current_node = self.head
+        prev = None
+
+        # If value to be deleted is head on LL
+        if current_node.key == key:
+            self.head = current_node.next
+            current_node.next = None
+            return current_node
+
+        while current_node != None:
+            if current_node.key == key:
+                prev.next = current_node.next
+                current_node.next = None
+                return current_node
+            else:
+                prev = current_node
+                current_node = current_node.next
+
+        return None
+
+    # Runtime: O(1)
+    def insert_head(self, node):
+        node.next = self.head
+        self.head = node
+
+    # Runtime: O(n)
+    def insert_head_or_overwrite(self, node):
+        existing_node = self.find(node.value)
+
+        if existing_node != None:
+            existing_node.value = node.value
+        else:
+            self.insert_head(node)
+
+
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
@@ -17,7 +71,6 @@ class HashTable:
     """
     A hash table that with `capacity` buckets
     that accepts string keys
-
     Implement this.
     """
 
@@ -27,16 +80,15 @@ class HashTable:
         else:
             self.capacity = capacity
 
-        self.hash_table = [None] * self.capacity
+        self.hash_table = [LinkedList()] * self.capacity
+        self.size = 0
 
     def get_num_slots(self):
         """
         Return the length of the list you're using to hold the hash
         table data. (Not the number of items stored in the hash table,
         but the number of slots in the main list.)
-
         One of the tests relies on this.
-
         Implement this.
         """
         return self.capacity
@@ -44,10 +96,9 @@ class HashTable:
     def get_load_factor(self):
         """
         Return the load factor for this hash table.
-
         Implement this.
         """
-        # Your code here
+        return self.size / self.capacity
 
     def djb2(self, key):
         hash_result = 5381
@@ -69,44 +120,69 @@ class HashTable:
     def put(self, key, value):
         """
         Store the value with the given key.
-
         Hash collisions should be handled with Linked List Chaining.
-
         Implement this.
         """
+        load_factor = self.get_load_factor()
+
+        if load_factor > 0.7:
+            self.resize(self.capacity * 2)
+
         idx = self.hash_index(key)
-        self.hash_table[idx] = value
+        node = HashTableEntry(key, value)
+        self.hash_table[idx].insert_head(node)
+        self.size += 1
 
     def delete(self, key):
         """
         Remove the value stored with the given key.
-
         Print a warning if the key is not found.
-
         Implement this.
         """
         idx = self.hash_index(key)
-        self.hash_table[idx] = None
+        node = self.hash_table[idx].delete(key)
+
+        if node is None:
+            print(f'Item with {key} not found in hashtable')
+        else:
+            self.size -= 1
 
     def get(self, key):
         """
         Retrieve the value stored with the given key.
-
         Returns None if the key is not found.
-
         Implement this.
         """
         idx = self.hash_index(key)
-        return self.hash_table[idx]
+        node = self.hash_table[idx].find(key)
+
+        if node is None:
+            return None
+        else:
+            return node.value
 
     def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
         rehashes all key/value pairs.
-
         Implement this.
         """
-        # Your code here
+
+        # old_table = self.hash_table
+        # new_hash_table = [LinkedList()] * new_capacity
+        # self.hash_table = new_hash_table
+        # self.capacity = new_capacity
+        # self.size = 0
+
+        # # Re-hash all items in old hash table into new hash table
+        # for idx in old_table:
+        #     current_node = idx.head
+
+        #     # Loop through LL Insert re-hashed item into new hash table
+        #     while current_node is not None:
+        #         self.put(current_node.key, current_node.value)
+        #         current_node = current_node.next
+        pass
 
 
 if __name__ == "__main__":
