@@ -98,7 +98,7 @@ class HashTable:
         Return the load factor for this hash table.
         Implement this.
         """
-        return self.size / self.capacity
+        return self.size / self.get_num_slots()
 
     def djb2(self, key):
         hash_result = 5381
@@ -123,10 +123,9 @@ class HashTable:
         Hash collisions should be handled with Linked List Chaining.
         Implement this.
         """
-        load_factor = self.get_load_factor()
 
-        if load_factor > 0.7:
-            self.resize(self.capacity * 2)
+        if self.get_load_factor() > 0.7:
+            self.resize(self.get_num_slots() * 2)
 
         idx = self.hash_index(key)
         node = HashTableEntry(key, value)
@@ -182,7 +181,6 @@ class HashTable:
         #     while current_node is not None:
         #         self.put(current_node.key, current_node.value)
         #         current_node = current_node.next
-        pass
 
 
 if __name__ == "__main__":
