@@ -43,6 +43,6 @@ with open('ciphertext.txt', 'r') as cypher_text:
 
         print(decoded_txt)
 
-    sorted_dictionary = char_count_lookup(text)
-    char_map = map_chars(sorted_dictionary)
+    sorted_char_count_dictionary = char_count_lookup(text)
+    char_map = map_chars(sorted_char_count_dictionary)
     decode_txt(text, char_map)
